@@ -1,0 +1,48 @@
+name: Sentinela Full CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rust Build
+        working-directory: backend-rust
+        run: |
+          cargo fmt --all -- --check
+          cargo clippy -- -D warnings
+          cargo test
+          cargo build --release
+
+  ai:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python Lint
+        working-directory: ai-service
+        run: |
+          pip install -r requirements.txt
+          python -m py_compile app/*.py
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Next Build
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [backend, ai, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Docker Build
+        run: |
+          docker build -t sentinela-backend ./backend-rust
+          docker build -t sentinela-frontend ./frontend

@@ -1,0 +1,28 @@
+services:
+  redis:
+    image: redis:7
+
+  backend:
+    build: ./backend-rust
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+
+  ai:
+    image: python:3.10
+    working_dir: /app
+    volumes:
+      - ./ai-service:/app
+    command: bash -c "pip install -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
