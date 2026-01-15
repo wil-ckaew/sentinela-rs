@@ -1,10 +1,5 @@
 import "./globals.css";
-import Navbar from "../components/Navbar";
-
-export const metadata = {
-  title: "Sentinela.rs",
-  description: "Monitoramento inteligente de logs",
-};
+import Navbar from "@/components/Navbar";
 
 export default function RootLayout({
   children,
@@ -13,9 +8,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body style={{ margin: 0 }}>
+      <body style={{ margin: 0, backgroundColor: "#f8fafc" }}>
         <Navbar />
-        <main style={{ padding: "24px" }}>{children}</main>
+        <main style={{ padding: 32 }}>{children}</main>
       </body>
     </html>
   );

@@ -1,35 +1,32 @@
 export const dynamic = "force-dynamic";
 
-const AI_BASE_URL =
-  process.env.NODE_ENV === "development"
-    ? "http://localhost:8000"
-    : "http://ai:8000";
+type AnalyzeResponse = {
+  total_logs: number;
+  anomalies_detected: number;
+  anomalies: string[];
+};
 
-async function getAlerts() {
+async function getAlerts(): Promise<AnalyzeResponse | null> {
   try {
-    const res = await fetch(`${AI_BASE_URL}/analyze`, {
+    const res = await fetch("http://ai:8000/analyze", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        logs: ["erro grave", "login ok", "falha critica"],
+        logs: ["erro grave", "login ok", "falha critica", "ok"],
       }),
       cache: "no-store",
     });
 
     if (!res.ok) {
-      throw new Error(`AI respondeu com status ${res.status}`);
+      throw new Error("Falha ao acessar AI service");
     }
 
-    return await res.json();
-  } catch (err) {
-    console.error("Erro ao buscar alertas:", err);
-    return {
-      total_logs: 0,
-      anomalies_detected: 0,
-      anomalies: [],
-    };
+    return res.json();
+  } catch (error) {
+    console.error("Erro ao buscar alertas:", error);
+    return null;
   }
 }
 
@@ -40,16 +37,30 @@ export default async function Dashboard() {
     <main style={{ padding: 40 }}>
       <h1>📊 Dashboard – Sentinela.rs</h1>
 
-      <p>Total de logs: {data.total_logs}</p>
-      <p>Anomalias detectadas: {data.anomalies_detected}</p>
+      {!data && (
+        <p style={{ color: "orange" }}>
+          ⚠️ AI indisponível ou erro de comunicação
+        </p>
+      )}
 
-      <ul>
-        {data.anomalies.map((log: string, i: number) => (
-          <li key={i} style={{ color: "red" }}>
-            ⚠️ {log}
-          </li>
-        ))}
-      </ul>
+      {data && (
+        <>
+          <p>Total de logs analisados: {data.total_logs}</p>
+          <p>Anomalias detectadas: {data.anomalies_detected}</p>
+
+          {data.anomalies.length === 0 ? (
+            <p style={{ color: "green" }}>✅ Nenhuma anomalia detectada</p>
+          ) : (
+            <ul>
+              {data.anomalies.map((log, index) => (
+                <li key={index} style={{ color: "red" }}>
+                  ⚠️ {log}
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      )}
     </main>
   );
 }

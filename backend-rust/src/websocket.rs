@@ -1,17 +1,18 @@
-use axum::extract::ws::{Message, WebSocket};
-use futures_util::StreamExt;
+use axum::{
+    extract::ws::{Message, WebSocket, WebSocketUpgrade},
+    response::IntoResponse,
+};
+use futures::{SinkExt, StreamExt};
 
-pub async fn handle_socket(mut socket: WebSocket) {
-    while let Some(msg) = socket.next().await {
-        match msg {
-            Ok(Message::Text(text)) => {
-                println!("📩 WebSocket recebeu: {}", text);
-            }
-            Ok(Message::Close(_)) => {
-                println!("❌ WebSocket fechado");
-                break;
-            }
-            _ => {}
+pub async fn ws_handler(ws: WebSocketUpgrade) -> impl IntoResponse {
+    ws.on_upgrade(handle_socket)
+}
+
+async fn handle_socket(mut socket: WebSocket) {
+    while let Some(Ok(msg)) = socket.next().await {
+        if let Message::Text(text) = msg {
+            let reply = format!("⚡ Evento recebido: {}", text);
+            let _ = socket.send(Message::Text(reply)).await;
         }
     }
 }

@@ -1,9 +1,15 @@
-use redis::{Commands, RedisResult};
+use redis::{Commands, Client};
 
-pub fn push_to_queue(payload: &str) -> RedisResult<()> {
-    let client = redis::Client::open("redis://redis:6379")?;
-    let mut con = client.get_connection()?;
+pub fn push_log(log: &str) {
+    let client = Client::open("redis://redis:6379").unwrap();
+    let mut con = client.get_connection().unwrap();
 
-    con.lpush::<_, _, ()>("sentinela_queue", payload)?;
-    Ok(())
+    let _: () = con.rpush("logs", log).unwrap();
+}
+
+pub fn get_logs() -> Vec<String> {
+    let client = Client::open("redis://redis:6379").unwrap();
+    let mut con = client.get_connection().unwrap();
+
+    con.lrange("logs", 0, -1).unwrap()
 }

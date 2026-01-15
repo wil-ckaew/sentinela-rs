@@ -7,20 +7,14 @@ export default function RealtimeChart() {
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
-    const id = setInterval(async () => {
-      const res = await fetch("http://localhost:8000/analyze");
-      const alerts = await res.json();
-
-      setData(prev => [
-        ...prev.slice(-15),
-        {
-          time: new Date().toLocaleTimeString(),
-          count: alerts.length,
-        },
+    const interval = setInterval(() => {
+      setData((prev) => [
+        ...prev.slice(-10),
+        { time: new Date().toLocaleTimeString(), value: Math.random() * 100 },
       ]);
-    }, 3000);
+    }, 1000);
 
-    return () => clearInterval(id);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -28,7 +22,7 @@ export default function RealtimeChart() {
       <XAxis dataKey="time" />
       <YAxis />
       <Tooltip />
-      <Line dataKey="count" />
+      <Line type="monotone" dataKey="value" stroke="#ff0000" />
     </LineChart>
   );
 }

@@ -4,24 +4,31 @@ import Link from "next/link";
 
 export default function Navbar() {
   return (
-    <nav
+    <header
       style={{
+        backgroundColor: "#0f172a", // azul escuro
+        color: "white",
+        padding: "16px 32px",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "16px 32px",
-        backgroundColor: "#020617",
-        color: "#ffffff",
-        borderBottom: "1px solid #1e293b",
       }}
     >
-      <strong>🛡️ Sentinela.rs</strong>
+      <strong style={{ fontSize: 20 }}>🛡️ Sentinela.rs</strong>
 
-      <div style={{ display: "flex", gap: "20px" }}>
-        <Link href="/">Dashboard</Link>
-        <Link href="/dashboard">Tempo real</Link>
-        <Link href="/upload">Upload</Link>
-      </div>
-    </nav>
+      <nav style={{ display: "flex", gap: 20 }}>
+        <Link href="/" style={{ color: "white", textDecoration: "none" }}>
+          Home
+        </Link>
+
+        <Link href="/dashboard" style={{ color: "white", textDecoration: "none" }}>
+          Dashboard
+        </Link>
+
+        <Link href="/upload" style={{ color: "white", textDecoration: "none" }}>
+          Upload
+        </Link>
+      </nav>
+    </header>
   );
 }

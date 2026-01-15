@@ -1,43 +1,89 @@
-# 🚨 Sentinela.rs
+# 🛡️ Sentinela.rs
 
-Analisador Inteligente de Logs e Performance em Tempo Real.
+Sistema profissional de **monitoramento, segurança e observabilidade**  
+desenvolvido com **Rust + Next.js + WebSockets + Prometheus + Grafana**.
 
-## 🔥 Tecnologias
-- Rust (Axum, Tokio, Rayon)
-- Python (FastAPI, Scikit-Learn)
-- Next.js 14 (TypeScript)
+---
+
+## 🚀 Tecnologias
+
+### Backend
+- Rust (Axum)
+- WebSockets em tempo real
+- JWT Authentication
 - Redis
+- Prometheus Metrics
+
+### Frontend
+- Next.js 14 (App Router)
+- Recharts (gráficos em tempo real)
+- Dashboard moderno
+
+### Infraestrutura
 - Docker
+- Docker Compose
+- Kubernetes (K8s)
+- Grafana + Prometheus
 
-## 🧠 O que o sistema faz
-- Upload de logs pesados (GBs)
-- Parsing concorrente em Rust
-- Detecção automática de anomalias com IA
-- Dashboard moderno com atualização instantânea
+---
 
-## 🏗 Arquitetura
-Frontend (Next.js) → Backend (Rust) → IA (Python) → Redis
+## 📊 Funcionalidades
 
-## 🚀 Como rodar
+- ✅ Health check do backend
+- ✅ Comunicação em tempo real (WebSocket)
+- ✅ Dashboard interativo
+- ✅ Gráficos live
+- ✅ Sistema de alertas automáticos
+- ✅ Logs persistidos
+- ✅ Observabilidade completa
+- ✅ Pronto para produção
+
+---
+
+## 🧠 Arquitetura
+
+
+sentinela.rs
+├── backend-rust
+│ ├── routes
+│ ├── websocket
+│ ├── alerts
+│ ├── metrics
+│ └── redis
+├── frontend
+│ ├── dashboard
+│ ├── components
+│ └── login
+├── observability
+│ ├── prometheus.yml
+│ └── grafana
+└── docker-compose.yml
+
+---
+
+## ▶️ Como rodar
+
 ```bash
-docker compose up --build
+docker-compose up --build
 
 Acesse:
 
-Alta performance com Rust
+💼 Objetivo do Projeto
 
-IA aplicada de verdade (não só API)
+Este projeto foi criado com foco em:
 
-Arquitetura distribuída
+Sistemas críticos
 
-Projeto nível produção
+Observabilidade
 
-📌 Próximas melhorias
+Segurança
 
-WebSockets
+Arquitetura moderna
 
-Autenticação JWT
+Portfólio para vagas backend / fullstack / Rust
 
-Clusterização de erros
+👤 Autor
 
-Kubernetes
+Wilson Silva
+GitHub: https://github.com/wil-ckaew
+
