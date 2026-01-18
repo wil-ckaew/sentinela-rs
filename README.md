@@ -1,89 +1,34 @@
 # 🛡️ Sentinela.rs
 
-Sistema profissional de **monitoramento, segurança e observabilidade**  
-desenvolvido com **Rust + Next.js + WebSockets + Prometheus + Grafana**.
-
----
+Sistema inteligente de monitoramento e detecção de anomalias com IA.
 
 ## 🚀 Tecnologias
-
-### Backend
 - Rust (Axum)
-- WebSockets em tempo real
-- JWT Authentication
-- Redis
-- Prometheus Metrics
-
-### Frontend
-- Next.js 14 (App Router)
-- Recharts (gráficos em tempo real)
-- Dashboard moderno
-
-### Infraestrutura
+- Python (FastAPI + ML)
+- PostgreSQL
+- Next.js 16
+- WebSocket
 - Docker
-- Docker Compose
-- Kubernetes (K8s)
-- Grafana + Prometheus
 
----
+## ⚙️ Funcionalidades
+- Detecção automática de anomalias
+- Dashboard em tempo real
+- Login com JWT
+- Alertas persistidos
+- Deploy pronto para VPS
 
-## 📊 Funcionalidades
-
-- ✅ Health check do backend
-- ✅ Comunicação em tempo real (WebSocket)
-- ✅ Dashboard interativo
-- ✅ Gráficos live
-- ✅ Sistema de alertas automáticos
-- ✅ Logs persistidos
-- ✅ Observabilidade completa
-- ✅ Pronto para produção
-
----
-
-## 🧠 Arquitetura
-
-
-sentinela.rs
-├── backend-rust
-│ ├── routes
-│ ├── websocket
-│ ├── alerts
-│ ├── metrics
-│ └── redis
-├── frontend
-│ ├── dashboard
-│ ├── components
-│ └── login
-├── observability
-│ ├── prometheus.yml
-│ └── grafana
-└── docker-compose.yml
-
----
-
-## ▶️ Como rodar
-
+## ▶️ Executar
 ```bash
-docker-compose up --build
+docker compose up --build
 
-Acesse:
+🌐 URLs
 
-💼 Objetivo do Projeto
+Frontend: http://localhost:3000
 
-Este projeto foi criado com foco em:
+Backend: http://localhost:8080
 
-Sistemas críticos
+AI: http://localhost:8000
 
-Observabilidade
-
-Segurança
-
-Arquitetura moderna
-
-Portfólio para vagas backend / fullstack / Rust
-
-👤 Autor
+📌 Autor
 
 Wilson Silva
-GitHub: https://github.com/wil-ckaew
-

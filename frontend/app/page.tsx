@@ -2,9 +2,11 @@ export const dynamic = "force-dynamic";
 
 async function getAlerts() {
   try {
-    const res = await fetch("http://ai:8000/analyze", {
-      cache: "no-store",
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_AI_URL}/analyze`,
+      { cache: "no-store" }
+    );
+
 
     if (!res.ok) {
       throw new Error("Falha ao acessar AI service");

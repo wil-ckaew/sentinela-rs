@@ -6,29 +6,24 @@ services:
       POSTGRES_USER: sentinela
       POSTGRES_PASSWORD: sentinela
     volumes:
-      - ./k8s/init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "5432:5432"
+      - pgdata:/var/lib/postgresql/data
 
   ai:
     build: ./ai-service
     environment:
       DATABASE_URL: postgres://sentinela:sentinela@db:5432/sentinela
-    depends_on:
-      - db
-    ports:
-      - "8000:8000"
+    depends_on: [db]
 
   backend:
     build: ./backend-rust
-    depends_on:
-      - db
+    depends_on: [db, ai]
     ports:
       - "8080:8080"
 
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"
-    depends_on:
-      - backend
+      - "80:3000"
+
+volumes:
+  pgdata:

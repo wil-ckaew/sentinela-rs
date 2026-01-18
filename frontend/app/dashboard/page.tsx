@@ -8,16 +8,19 @@ type AnalyzeResponse = {
 
 async function getAlerts(): Promise<AnalyzeResponse | null> {
   try {
-    const res = await fetch("http://ai:8000/analyze", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        logs: ["erro grave", "login ok", "falha critica", "ok"],
-      }),
-      cache: "no-store",
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_AI_URL}/analyze`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          logs: ["erro grave", "login ok", "falha critica", "ok"],
+        }),
+        cache: "no-store",
+      }
+    );
 
     if (!res.ok) {
       throw new Error("Falha ao acessar AI service");
@@ -39,13 +42,13 @@ export default async function Dashboard() {
 
       {!data && (
         <p style={{ color: "orange" }}>
-          ⚠️ AI indisponível ou erro de comunicação
+          ⚠️ AI indisponível ou sem resposta
         </p>
       )}
 
       {data && (
         <>
-          <p>Total de logs analisados: {data.total_logs}</p>
+          <p>Total de logs: {data.total_logs}</p>
           <p>Anomalias detectadas: {data.anomalies_detected}</p>
 
           {data.anomalies.length === 0 ? (

@@ -1,12 +1,23 @@
 "use client";
 
-import UploadForm from "@/components/UploadForm";
+export default function Upload() {
+  const handleUpload = async (e: any) => {
+    const file = e.target.files[0];
+    const text = await file.text();
 
-export default function UploadPage() {
+    await fetch("http://ai:8000/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ logs: text.split("\n") }),
+    });
+
+    alert("Logs enviados!");
+  };
+
   return (
-    <>
-      <h1>📤 Upload de Logs</h1>
-      <UploadForm />
-    </>
+    <main style={{ padding: 30 }}>
+      <h1>📂 Upload de Logs</h1>
+      <input type="file" accept=".log,.txt" onChange={handleUpload} />
+    </main>
   );
 }
