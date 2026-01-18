@@ -1,18 +1,24 @@
-use chrono::Utc;
+use axum::{extract::State, Json};
+use sqlx::PgPool;
+use serde::Serialize;
 
-pub fn generate_alert(level: &str, message: &str) -> String {
-    format!(
-        "[{}] [{}] {}",
-        Utc::now().to_rfc3339(),
-        level.to_uppercase(),
-        message
+#[derive(Serialize)]
+pub struct Alert {
+    pub id: i32,
+    pub message: String,
+    pub level: String,
+}
+
+pub async fn list_alerts(
+    State(pool): State<PgPool>,
+) -> Json<Vec<Alert>> {
+    let alerts = sqlx::query_as!(
+        Alert,
+        "SELECT id, message, level FROM alerts ORDER BY id DESC"
     )
-}
+    .fetch_all(&pool)
+    .await
+    .unwrap();
 
-pub fn critical_alert(message: &str) -> String {
-    generate_alert("CRITICAL", message)
-}
-
-pub fn warning_alert(message: &str) -> String {
-    generate_alert("WARNING", message)
+    Json(alerts)
 }

@@ -1,19 +1,19 @@
-use axum::{
-    Router,
-    routing::{post, get},
-    middleware,
+use axum::{Router, routing::{get, post}, middleware};
+use crate::{
+    alerts::list_alerts,
+    ws::ws_handler,
+    ai_proxy::analyze,
+    auth::login,
+    middleware::auth_middleware,
 };
-use sqlx::PgPool;
 
-use crate::{auth::login, middleware::auth_guard};
-
-pub fn routes(pool: PgPool) -> Router {
+pub fn routes() -> Router {
     Router::new()
         .route("/login", post(login))
+        .route("/analyze", post(analyze))
+        .route("/ws", get(ws_handler))
         .route(
-            "/dashboard",
-            get(|| async { "Dashboard protegido" })
-                .layer(middleware::from_fn(auth_guard)),
+            "/alerts",
+            get(list_alerts).layer(middleware::from_fn(auth_middleware)),
         )
-        .with_state(pool)
 }

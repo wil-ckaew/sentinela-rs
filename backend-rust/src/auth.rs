@@ -1,53 +1,78 @@
-use axum::{Json, extract::State};
-use serde::{Deserialize, Serialize};
-use jsonwebtoken::{encode, Header, EncodingKey};
-use chrono::{Utc, Duration};
+use axum::{
+    extract::{State, TypedHeader},
+    headers::Authorization,
+    http::StatusCode,
+    Json,
+};
+use jsonwebtoken::{encode, decode, Header, Validation, EncodingKey, DecodingKey};
+use serde::{Serialize, Deserialize};
 use sqlx::PgPool;
-use crate::models::User;
-
-#[derive(Deserialize)]
-pub struct LoginInput {
-    pub email: String,
-    pub password: String,
-}
+use std::env;
+use chrono::{Utc, Duration};
 
 #[derive(Serialize, Deserialize)]
 pub struct Claims {
-    pub sub: String,
+    pub sub: i32,
     pub role: String,
     pub exp: usize,
 }
 
+#[derive(Deserialize)]
+pub struct LoginRequest {
+    pub email: String,
+    pub password: String,
+}
+
+#[derive(Serialize)]
+pub struct LoginResponse {
+    pub token: String,
+}
+
 pub async fn login(
     State(pool): State<PgPool>,
-    Json(input): Json<LoginInput>,
-) -> Json<serde_json::Value> {
-
-    let user: User = sqlx::query_as(
-        "SELECT id, email, password, role FROM users WHERE email = $1"
+    Json(payload): Json<LoginRequest>,
+) -> Result<Json<LoginResponse>, StatusCode> {
+    let user = sqlx::query!(
+        "SELECT id, password, role FROM users WHERE email = $1",
+        payload.email
     )
-    .bind(&input.email)
     .fetch_one(&pool)
     .await
-    .expect("Usuário não encontrado");
+    .map_err(|_| StatusCode::UNAUTHORIZED)?;
 
-    if user.password != input.password {
-        panic!("Senha inválida");
+    if user.password != payload.password {
+        return Err(StatusCode::UNAUTHORIZED);
     }
 
-    let exp = Utc::now() + Duration::hours(2);
-
     let claims = Claims {
-        sub: user.email,
+        sub: user.id,
         role: user.role,
-        exp: exp.timestamp() as usize,
+        exp: (Utc::now() + Duration::hours(24)).timestamp() as usize,
     };
 
+    let secret = env::var("JWT_SECRET").unwrap();
     let token = encode(
         &Header::default(),
         &claims,
-        &EncodingKey::from_secret(b"SECRET"),
-    ).unwrap();
+        &EncodingKey::from_secret(secret.as_bytes()),
+    )
+    .unwrap();
 
-    Json(serde_json::json!({ "token": token }))
+    Ok(Json(LoginResponse { token }))
+}
+
+pub fn validate_token(
+    TypedHeader(auth): TypedHeader<Authorization<String>>,
+) -> Result<Claims, StatusCode> {
+    let token = auth.token();
+    let secret = env::var("JWT_SECRET").unwrap();
+
+    let data = decode::<Claims>(
+        token,
+        &DecodingKey::from_secret(secret.as_bytes()),
+        &Validation::default(),
+    )
+    .map_err(|_| StatusCode::UNAUTHORIZED)?;
+
+    Ok(data.claims)
 }

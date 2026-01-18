@@ -1,14 +1,22 @@
 # =========================
 # STAGE 1 — Build
 # =========================
-FROM rust:1.86 as builder
+FROM rust:1.88 as builder
 
 WORKDIR /app
 
-# Copia tudo
+# Copia apenas os manifests primeiro (cache melhor)
+COPY Cargo.toml Cargo.lock ./
+
+# Cria dummy src para cache
+RUN mkdir src && echo "fn main() {}" > src/main.rs
+RUN cargo build --release
+RUN rm -rf src
+
+# Agora copia o código real
 COPY . .
 
-# Build release
+# Build final
 RUN cargo build --release
 
 # =========================

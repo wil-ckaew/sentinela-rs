@@ -1,39 +1,21 @@
 use axum::{
-    body::Body,
-    http::Request,
+    http::StatusCode,
     middleware::Next,
     response::Response,
+    extract::Request,
 };
-use jsonwebtoken::{decode, Validation, DecodingKey};
-use crate::auth::Claims;
+use crate::auth::validate_token;
 
-pub async fn auth_guard(
-    req: Request<Body>,
+pub async fn auth_middleware(
+    req: Request,
     next: Next,
-) -> Response {
-    let auth_header = req
-        .headers()
-        .get("Authorization")
-        .and_then(|h| h.to_str().ok());
+) -> Result<Response, StatusCode> {
+    let headers = req.headers();
+    let auth = headers
+        .get("authorization")
+        .ok_or(StatusCode::UNAUTHORIZED)?;
 
-    if let Some(auth) = auth_header {
-        let token = auth.strip_prefix("Bearer ");
+    validate_token(auth.to_str().unwrap().parse().unwrap())?;
 
-        if let Some(token) = token {
-            if decode::<Claims>(
-                token,
-                &DecodingKey::from_secret(b"SECRET"),
-                &Validation::default(),
-            )
-            .is_ok()
-            {
-                return next.run(req).await;
-            }
-        }
-    }
-
-    Response::builder()
-        .status(401)
-        .body(Body::from("Não autorizado"))
-        .unwrap()
+    Ok(next.run(req).await)
 }

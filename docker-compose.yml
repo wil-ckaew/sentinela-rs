@@ -21,14 +21,18 @@ services:
 
   backend:
     build: ./backend-rust
+    environment:
+      DATABASE_URL: postgres://sentinela:sentinela@db:5432/sentinela
+      AI_URL: http://ai:8000
     depends_on:
       - db
+      - ai
     ports:
       - "8080:8080"
 
   frontend:
     build: ./frontend
-    ports:
-      - "3000:3000"
     depends_on:
       - backend
+    ports:
+      - "3000:3000"

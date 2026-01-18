@@ -1,24 +1,25 @@
-use dotenvy::dotenv;
-use tokio::net::TcpListener;
+use actix_web::{App, HttpServer, web};
+use actix_cors::Cors;
 
-mod auth;
 mod db;
+mod auth;
 mod models;
-mod middleware;
-mod routes;
+mod handlers;
+mod ws;
 
-#[tokio::main]
-async fn main() {
-    dotenv().ok();
-
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    dotenvy::dotenv().ok();
     let pool = db::connect().await;
-    let app = routes::routes(pool);
 
-    let listener = TcpListener::bind("0.0.0.0:8080")
-        .await
-        .unwrap();
-
-    println!("🚀 Backend rodando em http://localhost:8080");
-
-    axum::serve(listener, app).await.unwrap();
+    HttpServer::new(move || {
+        App::new()
+            .wrap(Cors::permissive())
+            .app_data(web::Data::new(pool.clone()))
+            .service(handlers::auth_handler::login)
+            .service(handlers::alert_handler::get_alerts)
+    })
+    .bind(("0.0.0.0", 8080))?
+    .run()
+    .await
 }
